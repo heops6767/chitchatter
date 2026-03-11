@@ -1,4 +1,4 @@
-# Chitchatter
+# BadBird Chitchatter
 
 ![Chitchatter logo](./public/logo/logo.svg)
 
