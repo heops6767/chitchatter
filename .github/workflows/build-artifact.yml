@@ -1,0 +1,36 @@
+name: Build and upload artifact
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.20.1
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Disable PWA in vite config
+        run: |
+          sed -i "s|import { VitePWA } from 'vite-plugin-pwa'|// import { VitePWA } from 'vite-plugin-pwa'|g" vite.config.ts
+          sed -i "s|import { manifest } from './manifest'|// import { manifest } from './manifest'|g" vite.config.ts
+          perl -0pi -e 's/VitePWA\\(\\{.*?selfDestroying: true,\\s*\\}\\),//smg' vite.config.ts
+
+      - name: Build app only
+        run: npx vite build
+
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: chitchatter-dist
+          path: dist
